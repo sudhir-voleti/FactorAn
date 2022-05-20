@@ -70,7 +70,8 @@ img(src = "example1.png") #, height = 280, width = 400
                          (h4(p("Uniqueness table - "))),
                          (dataTableOutput("uni")),
 #                          (textOutput("text4")),
-                         #plotOutput("plot1",height = 600, width = 850)),
+                         #plotOutput("plot1",height = 600, width = 850)
+			),
                 tabPanel("Loadings",dataTableOutput("loadings")),
                 
 #                tabPanel("Scores",tableOutput("scores")),   # origi code
