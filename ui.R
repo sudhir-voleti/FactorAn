@@ -70,7 +70,7 @@ img(src = "example1.png") #, height = 280, width = 400
                          (h4(p("Uniqueness table - "))),
                          (dataTableOutput("uni")),
 #                          (textOutput("text4")),
-                         plotOutput("plot1",height = 600, width = 850)),
+                         #plotOutput("plot1",height = 600, width = 850)),
                 tabPanel("Loadings",dataTableOutput("loadings")),
                 
 #                tabPanel("Scores",tableOutput("scores")),   # origi code
@@ -83,16 +83,16 @@ img(src = "example1.png") #, height = 280, width = 400
 	                      dataTableOutput("scores")),
                 tabPanel("Parameter Tests",
                          
-                         h2("KMO Test for Factor Adequacy"), br(),
-                         h4("The Kaiser-Meyer-Olkin (KMO) is a test conducted to examine the strength of the partial correlations
+                         h4("KMO Test for Factor Adequacy"), br(),
+                         p("The Kaiser-Meyer-Olkin (KMO) is a test conducted to examine the strength of the partial correlations
                             (how the factors explain each other) between the variables. KMO values closer to 1.0 are consider 
                             ideal while values less than 0.5 are unacceptable. According to Kaiser’s (1974) guidelines, 
                             a suggested cutoff for determining the factorability of the sample data is KMO ≥ 0.6."),
                          br(),
                          verbatimTextOutput("dummy"),
                          br(),
-                         h2("Bartlett’s test of Sphericity"), br(),
-                         h4("Bartlett’s Test of Sphericity compares an observed correlation matrix to the
+                         h4("Bartlett’s test of Sphericity"), br(),
+                         p("Bartlett’s Test of Sphericity compares an observed correlation matrix to the
                             identity matrix. An identity correlation matrix means your variables are 
                             unrelated and not ideal for factor analysis. The null hypothesis of the test
                             is that the variables are orthogonal, i.e. not correlated. 
@@ -100,8 +100,8 @@ img(src = "example1.png") #, height = 280, width = 400
                             Look for a significant test statistic (p.value < 0.05) that 
                             rejects this null (i.e. proves that the correlation matrix is NOT an identity matrix)."),
                          verbatimTextOutput("dummy2"), br(),
-                         h2("Determinant for Factorizability"), br(),
-                         h4("This is a simple test that looks for a positive determinant value, which implies the matrix in question is invertible and that the factorization can proceed smoothly."),
+                         h4("Determinant for Factorizability"), br(),
+                         p("This is a simple test that looks for a positive determinant value, which implies the matrix in question is invertible and that the factorization can proceed smoothly."),
                          p("The determinant of the correlation matrix for this dataset is :"), br(),
                          verbatimTextOutput("dummy3"),
                          h2("Visualization of Principal Axis Factoring"),
