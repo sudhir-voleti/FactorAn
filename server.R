@@ -98,15 +98,16 @@ fit = reactive ({
   }
   }) 
 
-output$dummy <- renderPrint(
+output$dummy <- renderDataTable(
   
   if (is.null(input$file)) { return(NULL) }
   else {
     a = KMO(r=cor(filtered_dataset()))
-    a$MSAi
+    data.frame("Scores" = a$MSAi)
   }
   
 )
+
 
 output$dummy2 <- renderPrint(
   
