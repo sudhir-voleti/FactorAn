@@ -90,7 +90,7 @@ img(src = "example1.png") #, height = 280, width = 400
                             ideal while values less than 0.5 are unacceptable. According to Kaiser’s (1974) guidelines, 
                             a suggested cutoff for determining the factorability of the sample data is KMO ≥ 0.6."),
                          br(),
-                         verbatimTextOutput("dummy"),
+                         dataTableOutput("dummy"),
                          br(),
                          h4("Bartlett’s test of Sphericity"), br(),
                          p("Bartlett’s Test of Sphericity compares an observed correlation matrix to the
