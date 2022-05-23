@@ -102,7 +102,8 @@ output$dummy <- renderPrint(
   
   if (is.null(input$file)) { return(NULL) }
   else {
-    KMO(r=cor(filtered_dataset()))
+    a = KMO(r=cor(filtered_dataset()))
+    a$MSAi
   }
   
 )
@@ -111,7 +112,8 @@ output$dummy2 <- renderPrint(
   
   if (is.null(input$file)) { return(NULL) }
   else {
-    cortest.bartlett(filtered_dataset())
+    b = cortest.bartlett(filtered_dataset())
+  b$p.value
   }
   
 )
