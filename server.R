@@ -103,7 +103,7 @@ output$dummy <- renderDataTable(
   if (is.null(input$file)) { return(NULL) }
   else {
     a = KMO(r=cor(filtered_dataset()))
-    data.frame("Scores" = a$MSAi)
+    data.frame("Scores" = round(a$MSAi,3))
   }
   
 )
