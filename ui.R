@@ -83,7 +83,7 @@ img(src = "example1.png") #, height = 280, width = 400
 	                      br(),br(),
 	                      dataTableOutput("scores")),
                 tabPanel("Parameter Tests",
-                         tags$b(h4("This tab was added in May 2022.")), br(),
+                         strong(h4("This tab was added in May 2022.")), br(),
                          h4("KMO Test for Factor Adequacy"), br(),
                          p("The Kaiser-Meyer-Olkin (KMO) is a test conducted to examine the strength of the partial correlations
                             (how the factors explain each other) between the variables. KMO values closer to 1.0 are consider 
