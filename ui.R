@@ -46,6 +46,8 @@ tabPanel("Overview",
 # marketing, product management, operations research, and other applied sciences that deal with large quantities of data.",align="justify"),
 # a(href="http://en.wikipedia.org/wiki/Factor_analysis","- Wikipedia"),
 h4(p("How to use this shiny application")),
+	                          a(href="https://www.youtube.com/watch?v=lxj5MPYHBwM","Youtube Link for App Navigation"),
+
 p("This shiny application require one data input from the user. To do so, click on the Browse (in left side-bar panel) and upload the csv data input file.
   Note that this application can read only csv file(comma delimited file), so if you don't have csv input data file, first convert your data in csv format 
   and then proceed. Make sure you have top row as variable names and first column as respondent id/name in csv file",align="justify"),
