@@ -37,7 +37,8 @@ output$colList <- renderUI({
 
 output$fxvarselect <- renderUI({
   varSelectInput("fxAttr",label = "Select Nonmetric Variables",data = Dataset1(),
-		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset1()))  })
+		 multiple = TRUE,selectize = TRUE,
+		 selected = colnames(Dataset1()), choices = setdiff(colnames(Dataset1()),input$selVar))  })
 
 	
 # should be in global.R
@@ -67,20 +68,20 @@ output$fxvarselect <- renderUI({
 #                choices=names(Dataset()) )    
 #  })
 
-filtered_dataset = reactive({
-    mydata = Dataset1()[,c(input$selVar,input$fxAttr)]   
-    if (length(input$fxAttr) >= 1){
-     for (j in 1:length(input$fxAttr)){
-       mydata[,input$fxAttr[j]] = as.factor(mydata[,input$fxAttr[j]]) }}
-    return(mydata) })
-    
+#filtered_dataset = reactive({
+#    mydata = Dataset1()[,c(input$selVar,input$fxAttr)]   
+#    if (length(input$fxAttr) >= 1){
+#     for (j in 1:length(input$fxAttr)){
+#       mydata[,input$fxAttr[j]] = as.factor(mydata[,input$fxAttr[j]]) }}
+#    return(mydata) })    
  					
 # Create dummy variables wala final DF
-#filtered_dataset <- reactive({
-#	dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
-#	df <- Dataset1()[, c(input$selVar)]
-#	df <- cbind(df[setdiff(names(df), input$fxAttr)], dummy_vars)		     
-#	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) })				     
+filtered_dataset <- reactive({
+	dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
+	df <- Dataset1()[, c(input$selVar)]
+	df <- cbind(df[setdiff(names(df), input$fxAttr)], dummy_vars)		     
+	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) 
+			     })				     
 					     
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
