@@ -19,9 +19,9 @@ Dataset1 <- reactive({
     Dataset <- as.data.frame(read.csv(input$file$datapath ,header=TRUE, sep = ","))
     Dataset <- Dataset |> tidyr::drop_na()
     rownames(Dataset) = Dataset[,1]
-    Dataset1 = Dataset[,2:ncol(Dataset)]
+    Dataset0 = Dataset[,2:ncol(Dataset)]
     #Dataset = t(Dataset)
-    return(Dataset1)
+    return(Dataset0)
     }
   })
 
@@ -78,11 +78,11 @@ output$fxvarselect <- renderUI({
 # Create dummy variables wala final DF
 filtered_dataset <- reactive({
 	#dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
-	df0 <- Dataset1()[, c(input$fxAttr)]
-	dummy_vars = fastDummies::dummy_cols(df0, select_columns = colnames(df0), 
+	df0 <- Dataset1()[,c(input$fxAttr)]
+	dummy_vars = fastDummies::dummy_cols(df0, select_columns = c(colnames(df0)), 
 					     remove_first_dummy = TRUE, remove_selected_columns = TRUE)
 	
-	df1 <- Dataset1()[, c(input$selVar)]
+	df1 <- Dataset1()[,c(input$selVar)]
 	df <- cbind(df1, dummy_vars)		     
 	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) 
 	return(df)	     })				     
