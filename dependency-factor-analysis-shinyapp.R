@@ -8,7 +8,7 @@ if (!require("magrittr")) {install.packages("magrittr")}
 if (!require("psych")){install.packages("psych")}
 if (!require("ggplot2")){install.packages("ggplot2")}
 if (!require("car")){install.packages("car")}
-
+if (!require("fastDummies")){install.packages("fastDummies")}
 
 library(psych)
 library(corrplot)
@@ -21,3 +21,4 @@ library("qgraph")
 library("corrplot")
 library("dplyr")
 library("DT")
+library("fastDummies")
