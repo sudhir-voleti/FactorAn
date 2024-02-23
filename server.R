@@ -12,10 +12,19 @@ library('car')
 
 shinyServer(function(input, output) {
 
-  Dataset <- reactive({
+readdata <- reactive({
+    if (is.null(input$file)) { return(NULL) }
+    else{
+      readdata <- as.data.frame(read.csv(input$file$datapath, header=TRUE, sep = ",", stringsAsFactors = TRUE))
+      readdata <- readdata |> drop_na()
+      return(readdata) } # else ends
+  })
+
+Dataset <- reactive({
     if (is.null(input$file)) { return(NULL) }
     else{
     Dataset <- as.data.frame(read.csv(input$file$datapath ,header=TRUE, sep = ","))
+    Dataset <- Dataset |> drop_na()
     rownames(Dataset) = Dataset[,1]
     Dataset1 = Dataset[,2:ncol(Dataset)]
     #Dataset = t(Dataset)
@@ -23,6 +32,51 @@ shinyServer(function(input, output) {
     }
   })
 
+filtered_dataset <- reactive({if (is.null(input$file)) { return(NULL) }
+  else{
+    Dataset <- Dataset() |> dplyr::select(!!!input$selVar)
+    return(Dataset)
+  }})
+
+output$colList <- renderUI({
+  varSelectInput("selVar",label = "Select Variables",data = Dataset(),multiple = TRUE,selectize = TRUE,selected = colnames(Dataset()))
+})
+
+ readdata.temp = reactive({
+    mydata = Dataset1()[,c(input$selVar, )]
+  })
+
+# should be in global.R
+data_frame_str <- function(data){
+  df_str <- data.frame(variable = names(data),
+                       class = sapply(data, class),
+                       first_values = sapply(data, function(x) paste0(head(x),  collapse = ", ")),
+                       unique_value_count = sapply(data,function(x) length(unique(x))),
+                       row.names = NULL) 
+  return(df_str)
+}
+					     
+data_fr_str <- reactive({
+    if (is.null(input$file)) { return(NULL) }
+    else{
+      data_frame_str(Dataset1()) # defined this func just above
+    }
+  }) # get structure of uploaded dataset
+
+					     
+output$fxvarselect <- renderUI({
+    if (is.null(input$file)||identical(readdata.temp(), '') || identical(readdata.temp(),data.frame())) return(NULL)
+    cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
+    cols <- cond_df$variable
+    
+    selectInput("fxAttr", 
+                label="Select non-metric variable in Data set",
+                multiple = TRUE,
+                selectize = TRUE,
+                selected =  cols,
+                choices=names(Dataset1()) )    
+  })
+  
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
   else{
@@ -30,17 +84,6 @@ fname <- reactive({
   }
 })
 
-
-filtered_dataset <- reactive({if (is.null(input$file)) { return(NULL) }
-  else{
-    Dataset <- Dataset() %>% dplyr::select(!!!input$selVar)
-    return(Dataset)
-  }})
-
-
-output$colList <- renderUI({
-  varSelectInput("selVar",label = "Select Variables",data = Dataset(),multiple = TRUE,selectize = TRUE,selected = colnames(Dataset()))
-})
 
 # output$table22 <- renderTable ({ 
 #   round(cor(Dataset()),2) 
