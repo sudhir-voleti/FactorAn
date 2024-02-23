@@ -6,7 +6,7 @@ library("shiny")
 library("nFactors")
 library("qgraph")
 library("corrplot")
-library("magrittr")
+library("tidyr")
 library('psych')
 library('car')
 library('fastDummies')
@@ -17,7 +17,7 @@ Dataset <- reactive({
     if (is.null(input$file)) { return(NULL) }
     else{
     Dataset <- as.data.frame(read.csv(input$file$datapath ,header=TRUE, sep = ","))
-    Dataset <- Dataset |> drop_na()
+    Dataset <- Dataset |> tidyr::drop_na()
     rownames(Dataset) = Dataset[,1]
     Dataset1 = Dataset[,2:ncol(Dataset)]
     #Dataset = t(Dataset)
