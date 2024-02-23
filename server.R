@@ -32,7 +32,7 @@ Dataset1 <- reactive({
 #  }})
 
 output$colList <- renderUI({
-  varSelectInput("selVar",label = "Select Metric Variables",data = Dataset1(),
+  varSelectInput("selVar",label = "Select Metric Variables", data = Dataset1(),
 		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset1()))  })
 
 output$fxvarselect <- renderUI({
@@ -48,13 +48,11 @@ output$fxvarselect <- renderUI({
 #                       first_values = sapply(data, function(x) paste0(head(x),  collapse = ", ")),
 #                       unique_value_count = sapply(data,function(x) length(unique(x))),
 #                       row.names = NULL) 
-#  return(df_str) }
-					     
+#  return(df_str) }					     
 #data_fr_str <- reactive({
 #    if (is.null(input$file)) { return(NULL) }
 #    else{ data_frame_str(Dataset()) } # defined this func just above
-#  }) # get structure of uploaded dataset
-					     
+#  }) # get structure of uploaded dataset					     
 #output$fxvarselect <- renderUI({
 #    if (is.null(input$file)||identical(Dataset1(), '') || identical(Dataset1(),data.frame())) return(NULL)
 #    cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
@@ -78,12 +76,13 @@ output$fxvarselect <- renderUI({
 # Create dummy variables wala final DF
 filtered_dataset <- reactive({
 	#dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
-	df0 <- Dataset1()[,c(input$fxAttr)]
+	#if (length(input$selVar) == 0) return(Dataset1())
+	df0 <- Dataset1()[names(Dataset1()) %in% c(input$fxAttr)]
 	dummy_vars = fastDummies::dummy_cols(df0, select_columns = c(colnames(df0)), 
 					     remove_first_dummy = TRUE, remove_selected_columns = TRUE)
 	
-	df1 <- Dataset1()[,c(input$selVar)]
-	df <- cbind(df1, dummy_vars)		     
+	df1 <- Dataset1()[names(Dataset1() %in% c(input$selVar)]
+	df <- dplyr::bind_cols(df1, dummy_vars)		     
 	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) 
 	return(df)	     })				     
 					     
