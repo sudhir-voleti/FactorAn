@@ -18,10 +18,13 @@ shinyUI(fluidPage(
   sidebarPanel(
     # Upload data:
     fileInput("file", "Upload input data (csv file with header)"), 
-    htmlOutput("fxvarselect"),
+    
     uiOutput("colList"),
     htmlOutput("fselect"),
-    textInput('fname',label = "Enter Factor Name (seperated by comma)"),
+    htmlOutput("fxvarselect"),
+	  
+    textInput('fname', label = "Enter Factor Name (seperated by comma)"),
+	  
     sliderInput("cutoff", "Cut-off for factor loadings(for Plotting only)", min = 0,  max = 1, value = 0.25),
     htmlOutput("xaxis"),
     htmlOutput("yaxis"),
