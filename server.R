@@ -12,13 +12,13 @@ library('car')
 
 shinyServer(function(input, output) {
 
-readdata <- reactive({
-    if (is.null(input$file)) { return(NULL) }
-    else{
-      readdata <- as.data.frame(read.csv(input$file$datapath, header=TRUE, sep = ",", stringsAsFactors = TRUE))
-      readdata <- readdata |> drop_na()
-      return(readdata) } # else ends
-  })
+#readdata <- reactive({
+#    if (is.null(input$file)) { return(NULL) }
+#    else{
+#      readdata <- as.data.frame(read.csv(input$file$datapath, header=TRUE, sep = ",", stringsAsFactors = TRUE))
+#      readdata <- readdata |> drop_na()
+#      return(readdata) } # else ends
+#   })
 
 Dataset <- reactive({
     if (is.null(input$file)) { return(NULL) }
@@ -32,19 +32,19 @@ Dataset <- reactive({
     }
   })
 
-filtered_dataset <- reactive({if (is.null(input$file)) { return(NULL) }
-  else{
-    Dataset <- Dataset() |> dplyr::select(!!!input$selVar)
-    return(Dataset)
-  }})
+#filtered_dataset <- reactive({if (is.null(input$file)) { return(NULL) }
+#  else{
+#    Dataset <- Dataset() |> dplyr::select(!!!input$selVar)
+#    return(Dataset)
+#  }})
 
 output$colList <- renderUI({
   varSelectInput("selVar",label = "Select Variables",data = Dataset(),multiple = TRUE,selectize = TRUE,selected = colnames(Dataset()))
 })
 
- readdata.temp = reactive({
-    mydata = Dataset1()[,c(input$selVar, )]
-  })
+# readdata.temp = reactive({
+#    mydata = Dataset1()[,c(input$selVar, )]
+#  })
 
 # should be in global.R
 data_frame_str <- function(data){
@@ -76,7 +76,11 @@ output$fxvarselect <- renderUI({
                 selected =  cols,
                 choices=names(Dataset1()) )    
   })
-  
+
+# Create dummy variables wala final DF
+filtered_dataset <- reactive({
+	fastDummies::dummy_cols(Dataset1(), select_columns = output$fxvarselectfxvarselect, remove_selected_columns = TRUE) })				     
+					     
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
   else{
