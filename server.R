@@ -48,7 +48,7 @@ data_frame_str <- function(data){
 data_fr_str <- reactive({
     if (is.null(input$file)) { return(NULL) }
     else{
-      data_frame_str(Dataset1()) # defined this func just above
+      data_frame_str(Dataset()) # defined this func just above
     }
   }) # get structure of uploaded dataset
 
@@ -66,9 +66,17 @@ output$fxvarselect <- renderUI({
                 choices=names(Dataset()) )    
   })
 
+#Dataset = reactive({
+#    mydata = Dataset()[,c(input$selVar,input$fxAttr)]   
+#    if (length(input$fxAttr) >= 1){
+#     for (j in 1:length(input$fxAttr)){
+#       mydata[,input$fxAttr[j]] = as.factor(mydata[,input$fxAttr[j]]) }}
+#    return(mydata) })
+    
+ 					     
 # Create dummy variables wala final DF
 filtered_dataset <- reactive({
-	fastDummies::dummy_cols(Dataset(), select_columns = output$fxvarselect, remove_selected_columns = TRUE) })				     
+	fastDummies::dummy_cols(Dataset(), select_columns = input$fxAttr, remove_selected_columns = TRUE) })				     
 					     
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
