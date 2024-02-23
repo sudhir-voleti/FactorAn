@@ -35,52 +35,52 @@ output$colList <- renderUI({
   varSelectInput("selVar",label = "Select Metric Variables",data = Dataset1(),
 		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset1()))  })
 
-#output$colListNM <- renderUI({
-#  varSelectInput("nmVar",label = "Select Nonmetric Variables",data = Dataset(),
-#		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset()))  })
+output$fxvarselect <- renderUI({
+  varSelectInput("fxAttr",label = "Select Nonmetric Variables",data = Dataset1(),
+		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset1()))  })
 
 	
 # should be in global.R
-data_frame_str <- function(data){
-  df_str <- data.frame(variable = names(data),
-                       class = sapply(data, class),
-                       first_values = sapply(data, function(x) paste0(head(x),  collapse = ", ")),
-                       unique_value_count = sapply(data,function(x) length(unique(x))),
-                       row.names = NULL) 
-  return(df_str) }
+#data_frame_str <- function(data){
+#  df_str <- data.frame(variable = names(data),
+#                       class = sapply(data, class),
+#                       first_values = sapply(data, function(x) paste0(head(x),  collapse = ", ")),
+#                       unique_value_count = sapply(data,function(x) length(unique(x))),
+#                       row.names = NULL) 
+#  return(df_str) }
 					     
-data_fr_str <- reactive({
-    if (is.null(input$file)) { return(NULL) }
-    else{ data_frame_str(Dataset()) } # defined this func just above
-  }) # get structure of uploaded dataset
+#data_fr_str <- reactive({
+#    if (is.null(input$file)) { return(NULL) }
+#    else{ data_frame_str(Dataset()) } # defined this func just above
+#  }) # get structure of uploaded dataset
 					     
-output$fxvarselect <- renderUI({
-    if (is.null(input$file)||identical(Dataset1(), '') || identical(Dataset1(),data.frame())) return(NULL)
-    cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
-    cols <- cond_df$variable
+#output$fxvarselect <- renderUI({
+#    if (is.null(input$file)||identical(Dataset1(), '') || identical(Dataset1(),data.frame())) return(NULL)
+#    cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
+#    cols <- cond_df$variable
     
-    selectInput("fxAttr", 
-                label="Select non-metric variable in Data set",
-                multiple = TRUE,
-                selectize = TRUE,
-                selected =  cols,
-                choices=names(Dataset()) )    
-  })
+#    selectInput("fxAttr", 
+#                label="Select non-metric variable in Data set",
+#                multiple = TRUE,
+#                selectize = TRUE,
+#                selected =  cols,
+#                choices=names(Dataset()) )    
+#  })
 
-#Dataset = reactive({
-#    mydata = Dataset1()[,c(input$selVar,input$fxAttr)]   
-#    if (length(input$fxAttr) >= 1){
-#     for (j in 1:length(input$fxAttr)){
-#       mydata[,input$fxAttr[j]] = as.factor(mydata[,input$fxAttr[j]]) }}
-#    return(mydata) })
+filtered_dataset = reactive({
+    mydata = Dataset1()[,c(input$selVar,input$fxAttr)]   
+    if (length(input$fxAttr) >= 1){
+     for (j in 1:length(input$fxAttr)){
+       mydata[,input$fxAttr[j]] = as.factor(mydata[,input$fxAttr[j]]) }}
+    return(mydata) })
     
  					
 # Create dummy variables wala final DF
-filtered_dataset <- reactive({
-	dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
-	df <- Dataset1()[, c(input$selVar)]
-	df <- cbind(df[setdiff(names(df), input$fxAttr)], dummy_vars)		     
-	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) })				     
+#filtered_dataset <- reactive({
+#	dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
+#	df <- Dataset1()[, c(input$selVar)]
+#	df <- cbind(df[setdiff(names(df), input$fxAttr)], dummy_vars)		     
+#	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) })				     
 					     
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
