@@ -17,6 +17,7 @@ Dataset1 <- reactive({
     if (is.null(input$file)) { return(NULL) }
     else{
     Dataset <- as.data.frame(read.csv(input$file$datapath ,header=TRUE, sep = ","))
+	if (input$rowID) {Dataset <- data.frame(rowID = seq(1:nrow(Dataset)), Dataset)}
     Dataset <- Dataset |> tidyr::drop_na()
     rownames(Dataset) = Dataset[,1]
     Dataset0 = Dataset[,2:ncol(Dataset)]
