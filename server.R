@@ -54,7 +54,7 @@ data_fr_str <- reactive({
 
 					     
 output$fxvarselect <- renderUI({
-    if (is.null(input$file)||identical(filtered_dataset(), '') || identical(filtered_dataset(),data.frame())) {return(NULL)}
+    if (is.null(input$file)||identical(Dataset(), '') || identical(Dataset(),data.frame())) {return(NULL)}
     cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
     cols <- cond_df$variable
     
