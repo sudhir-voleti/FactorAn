@@ -45,7 +45,7 @@ filtered_dataset <- reactive({
   if (is.null(input$file)) { return(NULL) }
   else{ df1 <- Dataset1() |> dplyr::select(!!!input$selVar)}
 
-  if (is.null(input$fxAttr)) { return(NULL) }
+  if (is.null(input$fxAttr)) { return(df1) }
   else{ df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr)
 	dummy_vars = fastDummies::dummy_cols(df0, select_columns = NULL, 
 					     remove_first_dummy = TRUE, remove_selected_columns = TRUE) 
