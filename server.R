@@ -47,11 +47,12 @@ filtered_dataset <- reactive({
 
   if (is.null(input$fxAttr)) { return(NULL) }
   else{ df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr)
-	dummy_vars = fastDummies::dummy_cols(df0, #select_columns = c(colnames(df0)), 
-					     remove_first_dummy = TRUE, remove_selected_columns = TRUE) }
-
-  df <- dplyr::bind_cols(df1, dummy_vars)	
-  return(df)
+	dummy_vars = fastDummies::dummy_cols(df0, select_columns = NULL, 
+					     remove_first_dummy = TRUE, remove_selected_columns = TRUE) 
+      df1 <- dplyr::bind_cols(df1, dummy_vars)	
+      }
+  #df <- dplyr::bind_cols(df1, dummy_vars)	
+  return(df1)
   })
 
 fname <- reactive({
