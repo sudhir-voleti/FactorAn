@@ -17,7 +17,8 @@ shinyUI(fluidPage(
   # Input in sidepanel:
   sidebarPanel(
     # Upload data:
-    fileInput("file", "Upload input data (csv file with header)"),  
+    fileInput("file", "Upload input data (csv file with header)"), 
+    htmlOutput("fxvarselect")
     uiOutput("colList"),
     htmlOutput("fselect"),
     textInput('fname',label = "Enter Factor Name (seperated by comma)"),
