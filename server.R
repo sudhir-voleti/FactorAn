@@ -40,53 +40,20 @@ output$fxvarselect <- renderUI({
 		 multiple = TRUE,selectize = TRUE,
 		 selected = setdiff(colnames(Dataset1()),input$selVar))  })
 
-	
-# should be in global.R
-#data_frame_str <- function(data){
-#  df_str <- data.frame(variable = names(data),
-#                       class = sapply(data, class),
-#                       first_values = sapply(data, function(x) paste0(head(x),  collapse = ", ")),
-#                       unique_value_count = sapply(data,function(x) length(unique(x))),
-#                       row.names = NULL) 
-#  return(df_str) }					     
-#data_fr_str <- reactive({
-#    if (is.null(input$file)) { return(NULL) }
-#    else{ data_frame_str(Dataset()) } # defined this func just above
-#  }) # get structure of uploaded dataset					     
-#output$fxvarselect <- renderUI({
-#    if (is.null(input$file)||identical(Dataset1(), '') || identical(Dataset1(),data.frame())) return(NULL)
-#    cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
-#    cols <- cond_df$variable
-    
-#    selectInput("fxAttr", 
-#                label="Select non-metric variable in Data set",
-#                multiple = TRUE,
-#                selectize = TRUE,
-#                selected =  cols,
-#                choices=names(Dataset()) )    
-#  })
-
-#filtered_dataset = reactive({
-#    mydata = Dataset1()[,c(input$selVar,input$fxAttr)]   
-#    if (length(input$fxAttr) >= 1){
-#     for (j in 1:length(input$fxAttr)){
-#       mydata[,input$fxAttr[j]] = as.factor(mydata[,input$fxAttr[j]]) }}
-#    return(mydata) })    
- 					
-# Create dummy variables wala final DF
 filtered_dataset <- reactive({
-	#dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
-	#if (length(input$selVar) == 0) return(Dataset1())
-	df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr)
-	dummy_vars = fastDummies::dummy_cols(df0, #select_columns = c(colnames(df0)), 
-					     remove_first_dummy = TRUE, remove_selected_columns = TRUE)
-	
-	#df1 <- Dataset1()[c(input$selVar)]
-	df1 <- Dataset1() |> dplyr::select(!!!input$selVar)
-	df <- dplyr::bind_cols(df1, dummy_vars)		     
-	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) 
-	return(df)	     })				     
-					     
+
+  if (is.null(input$file)) { return(NULL) }
+  else{ df1 <- Dataset1() |> dplyr::select(!!!input$selVar)}
+
+  if (is.null(input$fxAttr)) { return(NULL) }
+  else{ df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr)
+	dummy_vars = fastDummies::dummy_cols(df0, select_columns = c(colnames(df0)), 
+					     remove_first_dummy = TRUE, remove_selected_columns = TRUE) }
+
+  df <- dplyr::bind_cols(df1, dummy_vars)	
+  return(df)
+  })
+
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
   else{
