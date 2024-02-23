@@ -81,7 +81,7 @@ filtered_dataset <- reactive({
 	dummy_vars = fastDummies::dummy_cols(df0, select_columns = c(colnames(df0)), 
 					     remove_first_dummy = TRUE, remove_selected_columns = TRUE)
 	
-	df1 <- Dataset1()[names(Dataset1() %in% c(input$selVar)]
+	df1 <- Dataset1()[names(Dataset1()) %in% c(input$selVar)]
 	df <- dplyr::bind_cols(df1, dummy_vars)		     
 	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) 
 	return(df)	     })				     
