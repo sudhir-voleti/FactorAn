@@ -18,7 +18,7 @@ shinyUI(fluidPage(
   sidebarPanel(
     # Upload data:
     fileInput("file", "Upload input data (csv file with header)"), 
-    
+    checkboxInput("rowID", "need_rowID", FALSE),
     uiOutput("colList"),
     htmlOutput("fselect"),
     htmlOutput("fxvarselect"),
