@@ -9,16 +9,9 @@ library("corrplot")
 library("magrittr")
 library('psych')
 library('car')
+library('fastDummies')
 
 shinyServer(function(input, output) {
-
-#readdata <- reactive({
-#    if (is.null(input$file)) { return(NULL) }
-#    else{
-#      readdata <- as.data.frame(read.csv(input$file$datapath, header=TRUE, sep = ",", stringsAsFactors = TRUE))
-#      readdata <- readdata |> drop_na()
-#      return(readdata) } # else ends
-#   })
 
 Dataset <- reactive({
     if (is.null(input$file)) { return(NULL) }
@@ -42,10 +35,6 @@ output$colList <- renderUI({
   varSelectInput("selVar",label = "Select Variables",data = Dataset(),multiple = TRUE,selectize = TRUE,selected = colnames(Dataset()))
 })
 
-# readdata.temp = reactive({
-#    mydata = Dataset1()[,c(input$selVar, )]
-#  })
-
 # should be in global.R
 data_frame_str <- function(data){
   df_str <- data.frame(variable = names(data),
@@ -65,7 +54,7 @@ data_fr_str <- reactive({
 
 					     
 output$fxvarselect <- renderUI({
-    if (is.null(input$file)||identical(readdata.temp(), '') || identical(readdata.temp(),data.frame())) return(NULL)
+    if (is.null(input$file)||identical(readdata.temp(), '') || identical(readdata.temp(),data.frame())) {return(NULL)}
     cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
     cols <- cond_df$variable
     
@@ -74,12 +63,12 @@ output$fxvarselect <- renderUI({
                 multiple = TRUE,
                 selectize = TRUE,
                 selected =  cols,
-                choices=names(Dataset1()) )    
+                choices=names(Dataset()) )    
   })
 
 # Create dummy variables wala final DF
 filtered_dataset <- reactive({
-	fastDummies::dummy_cols(Dataset1(), select_columns = output$fxvarselectfxvarselect, remove_selected_columns = TRUE) })				     
+	fastDummies::dummy_cols(Dataset(), select_columns = output$fxvarselect, remove_selected_columns = TRUE) })				     
 					     
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
