@@ -46,7 +46,7 @@ filtered_dataset0 <- reactive({
 	})
 	
 filtered_dataset <- reactive({
-  if (is.null(input$fxAttr)) { return(filtered_dataset0) 
+  if (length(input$fxAttr) == 0) { return(filtered_dataset0) 
   	} else{ df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr);
 	dummy_vars = fastDummies::dummy_cols(df0, select_columns = NULL, 
 					     remove_first_dummy = TRUE, 
