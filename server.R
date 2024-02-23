@@ -13,7 +13,7 @@ library('fastDummies')
 
 shinyServer(function(input, output) {
 
-Dataset <- reactive({
+Dataset1 <- reactive({
     if (is.null(input$file)) { return(NULL) }
     else{
     Dataset <- as.data.frame(read.csv(input$file$datapath ,header=TRUE, sep = ","))
@@ -32,9 +32,14 @@ Dataset <- reactive({
 #  }})
 
 output$colList <- renderUI({
-  varSelectInput("selVar",label = "Select Variables",data = Dataset(),multiple = TRUE,selectize = TRUE,selected = colnames(Dataset()))
-})
+  varSelectInput("selVar",label = "Select Metric Variables",data = Dataset1(),
+		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset1()))  })
 
+#output$colListNM <- renderUI({
+#  varSelectInput("nmVar",label = "Select Nonmetric Variables",data = Dataset(),
+#		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset()))  })
+
+	
 # should be in global.R
 data_frame_str <- function(data){
   df_str <- data.frame(variable = names(data),
@@ -42,19 +47,15 @@ data_frame_str <- function(data){
                        first_values = sapply(data, function(x) paste0(head(x),  collapse = ", ")),
                        unique_value_count = sapply(data,function(x) length(unique(x))),
                        row.names = NULL) 
-  return(df_str)
-}
+  return(df_str) }
 					     
 data_fr_str <- reactive({
     if (is.null(input$file)) { return(NULL) }
-    else{
-      data_frame_str(Dataset()) # defined this func just above
-    }
+    else{ data_frame_str(Dataset()) } # defined this func just above
   }) # get structure of uploaded dataset
-
 					     
 output$fxvarselect <- renderUI({
-    if (is.null(input$file)||identical(Dataset(), '') || identical(Dataset(),data.frame())) return(NULL)
+    if (is.null(input$file)||identical(Dataset1(), '') || identical(Dataset1(),data.frame())) return(NULL)
     cond_df <- data_fr_str() |> filter((class=="numeric"| class=="integer") & unique_value_count<7)
     cols <- cond_df$variable
     
@@ -67,16 +68,19 @@ output$fxvarselect <- renderUI({
   })
 
 #Dataset = reactive({
-#    mydata = Dataset()[,c(input$selVar,input$fxAttr)]   
+#    mydata = Dataset1()[,c(input$selVar,input$fxAttr)]   
 #    if (length(input$fxAttr) >= 1){
 #     for (j in 1:length(input$fxAttr)){
 #       mydata[,input$fxAttr[j]] = as.factor(mydata[,input$fxAttr[j]]) }}
 #    return(mydata) })
     
- 					     
+ 					
 # Create dummy variables wala final DF
 filtered_dataset <- reactive({
-	fastDummies::dummy_cols(Dataset(), select_columns = c(input$selVar, input$fxAttr), remove_selected_columns = TRUE) })				     
+	dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
+	df <- Dataset1()[, c(input$selVar)]
+	df <- cbind(df[setdiff(names(df), input$fxAttr)], dummy_vars)		     
+	#fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), remove_selected_columns = TRUE) })				     
 					     
 fname <- reactive({
   if(length(strsplit(input$fname,',')[[1]])==0){return(NULL)}
@@ -106,7 +110,7 @@ output$corplot = renderPlot({
 
 
 
-output$table <- renderDataTable({ Dataset() },options = list(pageLength=25))
+output$table <- renderDataTable({ Dataset1() },options = list(pageLength=25))
   
 nS = reactive ({    
     if (is.null(input$file)) { return(NULL) }
@@ -381,7 +385,7 @@ output$plot3 = renderPlot({
 plot(x=(fit())$scores[,(f1())], y=(fit())$scores[,(f2())], type="p", pch=19, col="red",
     xlab = paste0(input$xaxis), ylab = paste0(input$yaxis))   # added this line in edit
 
-text(x=(fit())$scores[,(f1())],y=(fit())$scores[,(f2())],labels=rownames(Dataset()), pos = 2, col="blue", cex=0.8)
+text(x=(fit())$scores[,(f1())],y=(fit())$scores[,(f2())],labels=rownames(Dataset1()), pos = 2, col="blue", cex=0.8)
 
 abline(h=0); abline(v=0)
 }
@@ -389,10 +393,10 @@ abline(h=0); abline(v=0)
 
 output$loadings <- renderDataTable({ 
   if (is.null(input$file)) { return(NULL) } else{
-  # rownames((fit())$loadings) = colnames(Dataset())  # edit 2
+  # rownames((fit())$loadings) = colnames(Dataset1())  # edit 2
   b2 <- unclass((fit())$loadings); rownames(b2) <- NULL;  
   b1 <- data.frame(colnames(filtered_dataset()), round(b2,2));
-  names(b1)[1] <- "Variable"# [2:ncol(Dataset())];rownames(b1) <- colnames(Dataset())  # edit 2  
+  names(b1)[1] <- "Variable"# [2:ncol(Dataset1())];rownames(b1) <- colnames(Dataset1())  # edit 2  
   #-------#
   if(is.null(fname())){return(b1)}
   else{
@@ -442,8 +446,8 @@ output$uni <- renderDataTable({
 
 output$scores <- renderDataTable({     
   if (is.null(input$file)) { return(NULL) } else{
-      # rownames((fit())$scores) = rownames(Dataset()) # edit 3 i made.
-      # b0 <- (fit())$scores;   rownames(b0) <- rownames(Dataset()); 
+      # rownames((fit())$scores) = rownames(Dataset1()) # edit 3 i made.
+      # b0 <- (fit())$scores;   rownames(b0) <- rownames(Dataset1()); 
       b2 <- unclass((fit())$scores); rownames(b2) <- NULL; 
       b0 <- data.frame(rownames(filtered_dataset()), round(b2,2)) # else ends    
       names(b0)[1] <- "Variable"
