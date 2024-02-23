@@ -40,17 +40,18 @@ output$fxvarselect <- renderUI({
 		 multiple = TRUE,selectize = TRUE,
 		 selected = setdiff(colnames(Dataset1()),input$selVar))  })
 
+filtered_dataset0 <- reactive({
+  if (is.null(input$file)) { 
+	  return(NULL) } else{ df1 <- Dataset1() |> dplyr::select(!!!input$selVar); return(df1)}
+	})
+	
 filtered_dataset <- reactive({
-
-  if (is.null(input$file)) { return(NULL) 
- 	} else{ df1 <- Dataset1() |> dplyr::select(!!!input$selVar)}
-
-  if (is.null(input$fxAttr)) { return(df1) 
+  if (is.null(input$fxAttr)) { return(filtered_dataset0) 
   	} else{ df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr);
 	dummy_vars = fastDummies::dummy_cols(df0, select_columns = NULL, 
 					     remove_first_dummy = TRUE, 
 					     remove_selected_columns = TRUE); 
-      df1 <- dplyr::bind_cols(df1, dummy_vars)	
+      df1 <- dplyr::bind_cols(filtered_dataset0(), dummy_vars)	
       }
   #df <- dplyr::bind_cols(df1, dummy_vars)	
   return(df1)
