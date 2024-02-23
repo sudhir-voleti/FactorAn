@@ -78,7 +78,7 @@ output$fxvarselect <- renderUI({
 # Create dummy variables wala final DF
 filtered_dataset <- reactive({
 	#dummy_vars <- lapply(Dataset1()[input$fxAttr], function(x) model.matrix(~ x - 1))
-	dummy_vars = fastDummies::dummy_cols(Dataset1(), select_columns = input$fxAttr, 
+	dummy_vars = fastDummies::dummy_cols(Dataset1(), select_columns = c(input$fxAttr), 
 					     remove_first_dummy = TRUE, remove_selected_columns = TRUE)
 	
 	df1 <- Dataset1()[, input$selVar]
