@@ -38,7 +38,7 @@ output$colList <- renderUI({
 output$fxvarselect <- renderUI({
   varSelectInput("fxAttr",label = "Select Nonmetric Variables",data = Dataset1(),
 		 multiple = TRUE,selectize = TRUE,
-		 selected = colnames(Dataset1()), choices = setdiff(colnames(Dataset1()),input$selVar))  })
+		 selected = setdiff(colnames(Dataset1()),input$selVar))  })
 
 	
 # should be in global.R
