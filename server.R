@@ -47,15 +47,15 @@ filtered_dataset0 <- reactive({
 	})
 	
 filtered_dataset <- reactive({
-  if (length(input$fxAttr) == 0) { return(filtered_dataset0()) 
-  	} else{ df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr);
+  if (length(input$fxAttr) == 0) { 
+	  df1 <- filtered_dataset0(); return(df1) } else{ 
+	  df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr);
 	       df0[,1] = as.character(df0[,1]);
 	dummy_vars = fastDummies::dummy_cols(df0, select_columns = NULL, 
 					     remove_first_dummy = TRUE, 
 					     remove_selected_columns = TRUE); 
       df1 <- dplyr::bind_cols(filtered_dataset0(), dummy_vars)	
-      }
-  #df <- dplyr::bind_cols(df1, dummy_vars)	
+      } # else stmt ends  
   return(df1)
   })
 
