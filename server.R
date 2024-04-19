@@ -41,12 +41,12 @@ output$fxvarselect <- renderUI({
 		 multiple = TRUE,selectize = TRUE,
 		 selected = setdiff(colnames(Dataset1()),input$selVar))  })
 
-filtered_dataset0 <- reactive({
+filtered_dataset0 <- eventReactive(input$apply,{
   if (is.null(input$file)) { 
 	  return(NULL) } else{ df1 <- Dataset1() |> dplyr::select(!!!input$selVar); return(df1)}
 	})
 	
-filtered_dataset <- reactive({
+filtered_dataset <- eventReactive(input$apply,{
   if (length(input$fxAttr) == 0) { 
 	  df1 <- filtered_dataset0(); return(df1) } else{ 
 	  df0 <- Dataset1() |> dplyr::select(!!!input$fxAttr);
@@ -71,7 +71,7 @@ fname <- reactive({
 #   round(cor(Dataset()),2) 
 #                                       })
 output$corplot = renderPlot({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
     else{
       my_data = filtered_dataset()
       cor.mat <- round(cor(my_data),4)
@@ -89,8 +89,8 @@ output$corplot = renderPlot({
 
 output$table <- renderDataTable({ Dataset1() },options = list(pageLength=25))
   
-nS = reactive ({    
-    if (is.null(input$file)) { return(NULL) }
+nS = eventReactive (input$apply, {    
+    if (is.null(input$file)|input$apply==0) { return(NULL) }
     else{
       ev = eigen(cor(filtered_dataset(), use = 'pairwise.complete.obs'))  # get eigenvalues
       ap = parallel(subject=nrow((filtered_dataset())),var=ncol((filtered_dataset())),rep=100,cent=.05)
@@ -99,14 +99,14 @@ nS = reactive ({
 })
 
 output$fselect <- renderUI({ 
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
   numericInput("fselect", "Number of Factors:", unlist((nS())[1])[3])
   }
   })
 
 fselect = reactive({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
     
   fselect=input$fselect
@@ -115,9 +115,8 @@ fselect = reactive({
 })
 
 fit = reactive ({ 
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
-    
   fit = factanal(na.omit(filtered_dataset()), fselect() , scores="Bartlett", rotation="varimax");
   return (fit)
   }
@@ -125,7 +124,7 @@ fit = reactive ({
 
 output$dummy <- renderDataTable(
   
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
     a = KMO(r=cor(filtered_dataset()))
     data.frame("Scores" = round(a$MSAi,3))
@@ -134,27 +133,23 @@ output$dummy <- renderDataTable(
 )
 
 
-output$dummy2 <- renderPrint(
-  
-  if (is.null(input$file)) { return(NULL) }
+output$dummy2 <- renderPrint(  
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
     b = cortest.bartlett(filtered_dataset())
   b$p.value
   }
-  
 )
 
-output$dummy3 <- renderPrint(
-  
+output$dummy3 <- renderPrint(  
   if (is.null(input$file)) { return(NULL) }
   else {
     det(cor(filtered_dataset()))
-  }
-  
+  }  
 )
 
 output$plot_PA <- renderPlot(
-  if(is.null(input$file)) {return(NULL)}
+  if(is.null(input$file)|input$apply==0) {return(NULL)}
   else{
     
     fa.none <- fa(r=filtered_dataset(), 
@@ -170,7 +165,7 @@ output$plot_PA <- renderPlot(
 
 output$xaxis <- renderUI({
   
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
   if(is.null(fname())){
     n =(fselect())
@@ -197,7 +192,7 @@ output$xaxis <- renderUI({
 
 output$yaxis <- renderUI({
   
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
     if(is.null(fname())){
       n =(fselect())
@@ -221,7 +216,7 @@ output$yaxis <- renderUI({
 })
 
 f1 = reactive({
-  if(is.null(fname())){
+  if(is.null(fname())|input$apply==0){
     f = input$xaxis
     s <- strsplit(f, "[^[:digit:]]")
     solution <- as.numeric(unlist(s))
@@ -235,7 +230,7 @@ return(index)
 })
 
 f2 = reactive({
-  if(is.null(fname())){
+  if(is.null(fname())|input$apply==0){
     f = input$yaxis
     s <- strsplit(f, "[^[:digit:]]")
     solution <- as.numeric(unlist(s))
@@ -250,22 +245,20 @@ f2 = reactive({
   
 })
 
-
-
 output$text1 <- renderText({    
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
 else {
       return(paste("Test of the hypothesis that",(fit())$factors,"factors are sufficient."))}
 })
 
 output$text2 <- renderText({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
  else{
      return(paste("The chi square statistic is",round((fit())$STATISTIC,3),"on",(fit())$dof," degrees of freedom.")) }
                                    })
 
 output$text3 <- renderText({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
  else{
    return(paste("The p-value is",round((fit())$PVAL,3)))
  }
@@ -273,7 +266,7 @@ output$text3 <- renderText({
 #output$text4 <- renderText({ return(paste("Note - Optimal factors from are:",unlist((nS())[1])[3])) })
 
 output$plot1 = renderPlot({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
   
     fafitfree <- fa(filtered_dataset(), nfactors = fselect(), rotate = "none")
@@ -296,7 +289,7 @@ output$plot1 = renderPlot({
 
 
 output$plot20 = renderPlot({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
     
 a = unclass((fit())$loadings)
@@ -321,7 +314,7 @@ qgraph(cor(filtered_dataset(), use= 'complete.obs'),layout="spring", groups = gr
 })
 
 output$plot2 = renderPlot({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
     
   a0 = (fit())$loadings
@@ -356,7 +349,7 @@ output$plot2 = renderPlot({
 
 
 output$plot3 = renderPlot({
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
     
 plot(x=(fit())$scores[,(f1())], y=(fit())$scores[,(f2())], type="p", pch=19, col="red",
@@ -369,13 +362,13 @@ abline(h=0); abline(v=0)
 })
 
 output$loadings <- renderDataTable({ 
-  if (is.null(input$file)) { return(NULL) } else{
+  if (is.null(input$file)|input$apply==0) { return(NULL) } else{
   # rownames((fit())$loadings) = colnames(Dataset1())  # edit 2
   b2 <- unclass((fit())$loadings); rownames(b2) <- NULL;  
   b1 <- data.frame(colnames(filtered_dataset()), round(b2,2));
   names(b1)[1] <- "Variable"# [2:ncol(Dataset1())];rownames(b1) <- colnames(Dataset1())  # edit 2  
   #-------#
-  if(is.null(fname())){return(b1)}
+  if(is.null(fname())|input$apply==0){return(b1)}
   else{
     names(b1)[c(-1)]<-fname()
     return(b1)
@@ -387,7 +380,8 @@ output$loadings <- renderDataTable({
   })
 
 mat = reactive({
-  fact = (fit())
+if (is.null(input$file)|input$apply==0) { return(NULL) } else{	
+  fact = (fit())}
 # SS.loadings= colSums(fact$loading*fact$loading)
 # Proportion.Var = colSums(fact$loading*fact$loading)/dim(fact$loading)[1]
 # Cumulative.Var= cumsum(colSums(fact$loading*fact$loading)/dim(fact$loading)[1])
@@ -399,9 +393,8 @@ laodings = print(fact$loadings, digits=2, cutoff=.25, sort = TRUE)
 })
 
 output$mat <- renderPrint({ 
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{ mat() }
-  
   })
 
 # uni = reactive({ 
@@ -412,7 +405,7 @@ output$mat <- renderPrint({
 #  })
 
 output$uni <- renderDataTable({ 
-  if (is.null(input$file)) { return(NULL) }
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{ 
     # n = ceiling(length(uni())/3)
     # matrix(uni(), ncol = 1)
@@ -422,7 +415,7 @@ output$uni <- renderDataTable({
 
 
 output$scores <- renderDataTable({     
-  if (is.null(input$file)) { return(NULL) } else{
+  if (is.null(input$file)|input$apply==0) { return(NULL) } else{
       # rownames((fit())$scores) = rownames(Dataset1()) # edit 3 i made.
       # b0 <- (fit())$scores;   rownames(b0) <- rownames(Dataset1()); 
       b2 <- unclass((fit())$scores); rownames(b2) <- NULL; 
