@@ -23,6 +23,8 @@ shinyUI(fluidPage(
     htmlOutput("fselect"),
     htmlOutput("fxvarselect"),
 	  
+    actionButton(inputId = "apply",label = "Apply Changes", icon("refresh")),
+	  
     textInput('fname', label = "Enter Factor Name (seperated by comma)"),
 	  
     sliderInput("cutoff", "Cut-off for factor loadings(for Plotting only)", min = 0,  max = 1, value = 0.25),
