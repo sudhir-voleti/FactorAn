@@ -374,7 +374,6 @@ output$scores <- renderDataTable({
     	return(b0)
   	}
   }
-  }
 })  
 
 # edited May2024. display nonmetrics distbn verbatim
