@@ -120,9 +120,15 @@ img(src = "example1.png") #, height = 280, width = 400
                          ),
                 
                 tabPanel("Factor vs Variables",plotOutput("plot20",height = 600, width = 850)),
+	
                 tabPanel("Factor vs Variables 2",plotOutput("plot2",height = 600, width = 850)),
+	
                 tabPanel("Factor vs Users",plotOutput("plot3",height = 600, width = 850)),
-                tabPanel("Data",dataTableOutput("table")) 
+	
+                tabPanel("Data",
+			 h4("Non-Metric variables: Freq Distribution"), br(),
+			 verbatimTextOutput("listprint1"), br(),
+			 dataTableOutput("table")) 
     )
   ) 
 ) 
