@@ -26,12 +26,6 @@ Dataset1 <- reactive({
     }
   })
 
-#filtered_dataset <- reactive({if (is.null(input$file)) { return(NULL) }
-#  else{
-#    Dataset <- Dataset() |> dplyr::select(!!!input$selVar)
-#    return(Dataset)
-#  }})
-
 output$colList <- renderUI({
   varSelectInput("selVar",label = "Select Metric Variables", data = Dataset1(),
 		 multiple = TRUE,selectize = TRUE,selected = colnames(Dataset1()))  })
@@ -66,10 +60,6 @@ fname <- reactive({
   }
 })
 
-
-# output$table22 <- renderTable ({ 
-#   round(cor(Dataset()),2) 
-#                                       })
 output$corplot = renderPlot({
   if (is.null(input$file)|input$apply==0) { return(NULL) }
     else{
@@ -84,8 +74,6 @@ output$corplot = renderPlot({
       
     }
   })
-
-
 
 output$table <- renderDataTable({ Dataset1() },options = list(pageLength=25))
   
@@ -107,38 +95,34 @@ output$fselect <- renderUI({
 
 fselect = reactive({
   if (is.null(input$file)|input$apply==0) { return(NULL) }
-  else{
-    
-  fselect=input$fselect
-  return(fselect)
-  }
+  else{    
+	  fselect=input$fselect
+	  return(fselect)
+	  }
 })
 
 fit = reactive ({ 
   if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{
-  fit = factanal(na.omit(filtered_dataset()), fselect() , scores="Bartlett", rotation="varimax");
-  return (fit)
-  }
+	  fit = factanal(na.omit(filtered_dataset()), fselect() , scores="Bartlett", rotation="varimax");
+	  return (fit)
+	}
   }) 
 
-output$dummy <- renderDataTable(
-  
+output$dummy <- renderDataTable(  
   if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
-    a = KMO(r=cor(filtered_dataset()))
-    data.frame("Scores" = round(a$MSAi,3))
-  }
-  
+	    a = KMO(r=cor(filtered_dataset()))
+	    data.frame("Scores" = round(a$MSAi,3))
+	  }
 )
-
 
 output$dummy2 <- renderPrint(  
   if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
-    b = cortest.bartlett(filtered_dataset())
-  b$p.value
-  }
+    	b = cortest.bartlett(filtered_dataset())
+  	b$p.value
+  	}
 )
 
 output$dummy3 <- renderPrint(  
@@ -163,8 +147,7 @@ output$plot_PA <- renderPlot(
   }
 )
 
-output$xaxis <- renderUI({
-  
+output$xaxis <- renderUI({  
   if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
   if(is.null(fname())){
@@ -177,21 +160,15 @@ output$xaxis <- renderUI({
     
     selectInput("xaxis", "Choose Factor for plotting on X axis",
                 list, selected = "Factor 1")
-  }else{
+  } else {
       temp = fname()
        selectInput("xaxis", "Choose Factor for plotting on X axis",
                 temp, selected = temp[1])
-    
+  	}
   }
-    
-    
-  }
-  
-  
 })
 
-output$yaxis <- renderUI({
-  
+output$yaxis <- renderUI({  
   if (is.null(input$file)|input$apply==0) { return(NULL) }
   else {
     if(is.null(fname())){
@@ -204,15 +181,13 @@ output$yaxis <- renderUI({
       list2 = setdiff(list,input$xaxis)
       selectInput("yaxis", "Choose Factor for plotting on Y axis",
                   list2, selected = "Factor 2")
-    }else{
+    } else {
       temp = fname()
       temp2 = setdiff(temp,input$xaxis)
       selectInput("yaxis", "Choose Factor for plotting on Y axis",
-                  temp2, selected = temp2[1])
-      
+                  temp2, selected = temp2[1])      
+    	}
     }
-      }
-  
 })
 
 f1 = reactive({
@@ -222,11 +197,10 @@ f1 = reactive({
     solution <- as.numeric(unlist(s))
     solution <- unique(solution[!is.na(solution)])
     return(solution)
-  }else{
-index <- match(input$xaxis,fname())
-return(index)
-}
-  
+  } else {
+	index <- match(input$xaxis,fname())
+	return(index)
+	}
 })
 
 f2 = reactive({
@@ -238,11 +212,8 @@ f2 = reactive({
     return(solution)
   }else{
     index<-match(input$yaxis,fname()) 
-    return(index)
-    
+    return(index)    
    }
-  
-  
 })
 
 output$text1 <- renderText({    
@@ -280,10 +251,8 @@ output$plot1 = renderPlot({
       xlab("Number of factors") +
       ylab("Initial eigenvalue") +
       labs( title = "Scree Plot", 
-            subtitle = "(Based on the unreduced correlation matrix)")
-    
-    scree_plot1  
-  
+            subtitle = "(Based on the unreduced correlation matrix)")    
+    scree_plot1    
   }
   })
 
@@ -343,22 +312,16 @@ output$plot2 = renderPlot({
   }
 })
 
-
-
-
-
-
 output$plot3 = renderPlot({
   if (is.null(input$file)|input$apply==0) { return(NULL) }
-  else{
-    
-plot(x=(fit())$scores[,(f1())], y=(fit())$scores[,(f2())], type="p", pch=19, col="red",
-    xlab = paste0(input$xaxis), ylab = paste0(input$yaxis))   # added this line in edit
+  else{   
+	plot(x=(fit())$scores[,(f1())], y=(fit())$scores[,(f2())], 
+	     type="p", pch=19, col="red", 
+	     xlab = paste0(input$xaxis), ylab = paste0(input$yaxis))
 
-text(x=(fit())$scores[,(f1())],y=(fit())$scores[,(f2())],labels=rownames(Dataset1()), pos = 2, col="blue", cex=0.8)
-
-abline(h=0); abline(v=0)
-}
+	text(x=(fit())$scores[,(f1())],y=(fit())$scores[,(f2())],labels=rownames(Dataset1()), pos = 2, col="blue", cex=0.8)
+	abline(h=0); abline(v=0)
+	}
 })
 
 output$loadings <- renderDataTable({ 
@@ -380,29 +343,14 @@ output$loadings <- renderDataTable({
   })
 
 mat = reactive({
-if (is.null(input$file)|input$apply==0) { return(NULL) } else{	
-  fact = (fit())}
-# SS.loadings= colSums(fact$loading*fact$loading)
-# Proportion.Var = colSums(fact$loading*fact$loading)/dim(fact$loading)[1]
-# Cumulative.Var= cumsum(colSums(fact$loading*fact$loading)/dim(fact$loading)[1])
-# mat = rbind(SS.loadings,Proportion.Var,Cumulative.Var)
-laodings = print(fact$loadings, digits=2, cutoff=.25, sort = TRUE)
-# out = list(Stat = mat, loadings=laodings)
-# return(laodings)
-
+if (is.null(input$file)|input$apply==0) { return(NULL) } else {	fact = (fit())}
+	laodings = print(fact$loadings, digits=2, cutoff=.25, sort = TRUE)
 })
 
 output$mat <- renderPrint({ 
   if (is.null(input$file)|input$apply==0) { return(NULL) }
   else{ mat() }
   })
-
-# uni = reactive({ 
-# a = matrix(fit()$uniqueness,1,)
-# colnames(a) = rownames(as.matrix(fit()$uniqueness))
-# rownames(a) = "Uniqueness"
-# return(a)
-#  })
 
 output$uni <- renderDataTable({ 
   if (is.null(input$file)|input$apply==0) { return(NULL) }
@@ -413,7 +361,6 @@ output$uni <- renderDataTable({
     }
 },options = list(pageLength=10))
 
-
 output$scores <- renderDataTable({     
   if (is.null(input$file)|input$apply==0) { return(NULL) } else{
       # rownames((fit())$scores) = rownames(Dataset1()) # edit 3 i made.
@@ -423,14 +370,32 @@ output$scores <- renderDataTable({
       names(b0)[1] <- "Variable"
   if(is.null(fname())){return(b0)}
   else{
-    names(b0)[c(-1)]<-fname()
-    return(b0)
+    	names(b0)[c(-1)]<-fname()
+    	return(b0)
+  	}
   }
   }
-      # unclass((fit())$scores)
-      #                             }
 })  
-  
+
+# edited May2024. display nonmetrics distbn verbatim
+list_out <- function(df1){  
+  outp_list0 = vector(mode="list", length=ncol(df1))
+  colnames0 = colnames(df1)
+  for (i0 in 1:ncol(df1)){
+    tab1 = table(df1[,i0])
+    dimnames(tab1)[[1]][1] = paste0(colnames0[i0], ": ", dimnames(tab1)[[1]][1])
+    outp_list0[[i0]] = tab1 } # for loop ends
+  return(outp_list0)
+  } # func ends
+
+output$listprint1 <- renderPrint(  
+  if (is.null(input$file)|input$apply==0) { return(NULL) }
+  else {
+  	df1 <- Dataset1() |> dplyr::select(!!!input$fxAttr)
+	list1 = list_out(df1) 
+	return(list1) 	} # else ends	
+)
+
 # my edits 16-sept-2017 below
   output$downloadDataX <- downloadHandler(
     filename = function() { "Fac_scores.csv" },
