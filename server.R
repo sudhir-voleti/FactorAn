@@ -423,7 +423,21 @@ output$downloadData3 <- downloadHandler(
     write.csv(read.csv("data/factorAn ex1 toothpaste data.csv"), file, row.names=F, col.names=F)
   }
 )
-	
+
+output$downloadData4 <- downloadHandler(
+  filename = function() { "diamond prices 10k.csv" },
+  content = function(file) {
+    write.csv(read.csv("data/diamond prices 10k.csv"), file, row.names=F, col.names=F)
+  }
+)
+
+output$downloadData5 <- downloadHandler(
+  filename = function() { "music_albums_500.csv" },
+  content = function(file) {
+    write.csv(read.csv("data/music_albums_500.csv"), file, row.names=F, col.names=F)
+  }
+)
+
   
 })
 
