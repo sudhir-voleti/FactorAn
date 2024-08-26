@@ -376,15 +376,21 @@ output$scores <- renderDataTable({
   }
 })  
 
-# edited May2024. display nonmetrics distbn verbatim
+# edited Aug2024. display nonmetrics distbn verbatim
 list_out <- function(df1){  
+	
+# Check if df1 is empty (i.e., if there are no columns)
+  if(ncol(df1) == 0){
+    return("No nonmetric columns found")
+  } else {
+	
   outp_list0 = vector(mode="list", length=ncol(df1))
   colnames0 = colnames(df1)
   for (i0 in 1:ncol(df1)){
     tab1 = table(df1[,i0])
     dimnames(tab1)[[1]][1] = paste0(colnames0[i0], ": ", dimnames(tab1)[[1]][1])
     outp_list0[[i0]] = tab1 } # for loop ends
-  return(outp_list0)
+  return(outp_list0) } # else clause ends here
   } # func ends
 
 output$listprint1 <- renderPrint(  
